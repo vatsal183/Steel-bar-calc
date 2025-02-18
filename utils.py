@@ -47,8 +47,13 @@ def calculate_weight(volume, density):
     weight_kg = weight_g / 1000
     return weight_kg
 
-def calculate_price(weight_kg, price_per_kg):
+def calculate_price_per_kg(weight_kg, price_per_kg):
     return weight_kg * price_per_kg
+
+def calculate_price_per_sq_inch(area_mm2, price_per_sq_inch):
+    # Convert area from mm² to sq inch
+    area_sq_inch = area_mm2 / 645.16
+    return area_sq_inch * price_per_sq_inch
 
 def calculate_round_dimension_from_weight(weight_kg, length, density):
     # Convert weight to volume in mm³

@@ -58,13 +58,31 @@ with col1:
         help="Standard steel density is 7.85 g/cm³"
     )
 
-    price_per_kg = st.number_input(
-        "Price per kg (Rs.)",
-        min_value=0.0,
-        value=100.0,
-        step=0.1,
-        format="%.2f"
+    # Pricing method
+    pricing_method = st.radio(
+        "Pricing Method",
+        ["Per kg", "Per square inch"],
+        horizontal=True
     )
+
+    if pricing_method == "Per kg":
+        price_per_kg = st.number_input(
+            "Price per kg (Rs.)",
+            min_value=0.0,
+            value=100.0,
+            step=0.1,
+            format="%.2f"
+        )
+        price_per_sq_inch = 0.0
+    else:
+        price_per_sq_inch = st.number_input(
+            "Price per square inch (Rs.)",
+            min_value=0.0,
+            value=10.0,
+            step=0.1,
+            format="%.2f"
+        )
+        price_per_kg = 0.0
 
     if calc_mode == "Dimensions to Weight":
         # Input fields based on bar type
@@ -253,9 +271,10 @@ with col1:
 
             surface_area, volume = calculate_flat_bar(width, thickness, length, unit)
 
-# Calculate weight and price
+# Calculate weight and prices
 weight = calculate_weight(volume, density)
-total_price = calculate_price(weight, price_per_kg)
+price_by_weight = calculate_price_per_kg(weight, price_per_kg) if price_per_kg > 0 else 0
+price_by_area = calculate_price_per_sq_inch(surface_area, price_per_sq_inch) if price_per_sq_inch > 0 else 0
 
 # Display results
 with col2:
@@ -277,10 +296,16 @@ with col2:
         f"{weight:.2f} kg ({weight*2.20462:.2f} lbs)"
     )
 
-    st.metric(
-        "Total Price",
-        f"Rs. {total_price:.2f}"
-    )
+    if price_by_weight > 0:
+        st.metric(
+            "Total Price (by weight)",
+            f"Rs. {price_by_weight:.2f}"
+        )
+    if price_by_area > 0:
+        st.metric(
+            "Total Price (by area)",
+            f"Rs. {price_by_area:.2f}"
+        )
 
 st.markdown("""
 ---
@@ -291,8 +316,9 @@ st.markdown("""
 2. Choose your preferred unit of measurement (mm or inch)
 3. Enter the dimensions of the bar
 4. Specify the material density (default is steel at 7.85 g/cm³)
-5. Enter the price per kg
-6. Results will update automatically in real-time
+5. Choose pricing method (per kg or per square inch)
+6. Enter the price
+7. Results will update automatically in real-time
 
 #### Weight to Dimensions Mode:
 1. Select the type of bar
