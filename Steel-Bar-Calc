@@ -1,0 +1,9 @@
+git init
+git add .streamlit/config.toml
+git add main.py
+git add utils.py
+git add README.md
+git add .gitignore
+git commit -m "Initial commit: Steel Bar Calculator"
+git remote add origin https://github.com/yourusername/steel-bar-calculator.git
+git push -u origin main
