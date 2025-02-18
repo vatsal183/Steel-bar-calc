@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import plotly.graph_objects as go
 from utils import *
 
 st.set_page_config(
@@ -23,7 +22,7 @@ st.markdown("""
 
 # Title and description
 st.title("Steel Bar Calculator")
-st.markdown("Calculate dimensions, cross-sectional area, volume, and weight for different types of steel bars.")
+st.markdown("Calculate dimensions, cross-sectional area, volume, weight, and price for different types of steel bars.")
 
 # Create two columns for input and output
 col1, col2 = st.columns([3, 2])
@@ -101,7 +100,7 @@ with col1:
                 step=0.1,
                 format="%.2f"
             )
-            surface_area, volume = calculate_round_bar(diameter, length, unit)
+            cross_section_area, volume = calculate_round_bar(diameter, length, unit)
 
         elif bar_type == "Square Bar":
             side = st.number_input(
@@ -118,7 +117,7 @@ with col1:
                 step=0.1,
                 format="%.2f"
             )
-            surface_area, volume = calculate_square_bar(side, length, unit)
+            cross_section_area, volume = calculate_square_bar(side, length, unit)
 
         else:  # Flat Bar
             width = st.number_input(
@@ -142,7 +141,7 @@ with col1:
                 step=0.1,
                 format="%.2f"
             )
-            surface_area, volume = calculate_flat_bar(width, thickness, length, unit)
+            cross_section_area, volume = calculate_flat_bar(width, thickness, length, unit)
 
     else:  # Weight to Dimensions mode
         target_weight = st.number_input(
@@ -189,7 +188,7 @@ with col1:
                     diameter = mm_to_inch(diameter)
                 st.info(f"Required diameter: {diameter:.2f} {unit}")
 
-            surface_area, volume = calculate_round_bar(diameter, length, unit)
+            cross_section_area, volume = calculate_round_bar(diameter, length, unit)
 
         elif bar_type == "Square Bar":
             if calc_dimension == "Length":
@@ -221,7 +220,7 @@ with col1:
                     side = mm_to_inch(side)
                 st.info(f"Required side length: {side:.2f} {unit}")
 
-            surface_area, volume = calculate_square_bar(side, length, unit)
+            cross_section_area, volume = calculate_square_bar(side, length, unit)
 
         else:  # Flat Bar
             if calc_dimension == "Length":
@@ -269,12 +268,12 @@ with col1:
                     thickness = mm_to_inch(thickness)
                 st.info(f"Required thickness: {thickness:.2f} {unit}")
 
-            surface_area, volume = calculate_flat_bar(width, thickness, length, unit)
+            cross_section_area, volume = calculate_flat_bar(width, thickness, length, unit)
 
 # Calculate weight and prices
 weight = calculate_weight(volume, density)
 price_by_weight = calculate_price_per_kg(weight, price_per_kg) if price_per_kg > 0 else 0
-price_by_area = calculate_price_per_sq_inch(surface_area, price_per_sq_inch) if price_per_sq_inch > 0 else 0
+price_by_area = calculate_price_per_sq_inch(cross_section_area, price_per_sq_inch) if price_per_sq_inch > 0 else 0
 
 # Display results
 with col2:
@@ -283,7 +282,7 @@ with col2:
     # Create metrics for results
     st.metric(
         "Cross-sectional Area",
-        f"{surface_area:.2f} mm² ({surface_area/645.16:.2f} sq. inch)"
+        f"{cross_section_area:.2f} mm² ({cross_section_area/645.16:.2f} sq. inch)"
     )
 
     st.metric(
@@ -303,7 +302,7 @@ with col2:
         )
     if price_by_area > 0:
         st.metric(
-            "Total Price (by area)",
+            "Total Price (by cross-sectional area)",
             f"Rs. {price_by_area:.2f}"
         )
 
